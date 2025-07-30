@@ -2,18 +2,19 @@
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
+import { envVar } from "./app/config/env.config";
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let server: Server;
 
 const startServer = async () => {
     try {
-        await mongoose.connect('mongodb+srv://Digital-Wallet-Management:Hs8JEINyCIQv2miL@cluster0.blz8y.mongodb.net/Library-Management?retryWrites=true&w=majority&appName=Cluster0')
+        await mongoose.connect(envVar.MONGODB_URI)
 
         console.log("Data Base is connected");
 
-        server = app.listen(5000, () => {
-            console.log(`Server is running Port on 5000`);
+        server = app.listen(envVar.PORT, () => {
+            console.log(`Server is running Port on ${envVar.PORT}`);
         })
     } catch (error) {
         console.log(error);
