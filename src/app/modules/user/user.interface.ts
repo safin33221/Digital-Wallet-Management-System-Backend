@@ -1,9 +1,9 @@
 import { Types } from "mongoose"
 
-export interface IUserRole {
-    ADMIN: "ADMIN",
-    AGENT: "AGENT",
-    USER: "USER"
+export enum Role {
+    ADMIN = "ADMIN",
+    AGENT = "AGENT",
+    USER = "USER"
 
 }
 export interface IUser {
@@ -11,10 +11,11 @@ export interface IUser {
     walletID?: Types.ObjectId;
     name: string;
     email: string;
-    phoneNumber?: string;
-    nationalIdNumber: string;
+    phoneNumber: string;
+    nationalIdNumber?: string;
     password: string;
-    role: IUserRole;
+    role: Role;
+    isVerified: boolean;
     createdAt: Date;
     updatedAt: Date
 
