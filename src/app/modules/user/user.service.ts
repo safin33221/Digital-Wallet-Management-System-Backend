@@ -1,8 +1,9 @@
+import { Wallet } from "../wallet/wallet.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 
 const createUser = async (payload: Partial<IUser>) => {
-    console.log(payload);
+
 
     const isExistUser = await User.findOne({ email: payload.email })
     if (isExistUser) {
@@ -10,8 +11,16 @@ const createUser = async (payload: Partial<IUser>) => {
     }
 
     const user = await User.create(payload)
-    console.log(user);
-    return user
+
+
+    const wallet = await Wallet.create({
+        userId: user._id,
+        balance: 100,
+
+    })
+    const updatedUser = await User.findByIdAndUpdate(user._id, { walletID: wallet._id }, { new: true })
+
+    return updatedUser
 
 }
 

@@ -21,7 +21,8 @@ const walletSchema = new Schema<IWallet>({
     },
     kycStatus: {
         type: String,
-        enum: Object.values(kycStatus)
+        enum: Object.values(kycStatus),
+        default: kycStatus.NOT_VERIFIED
     },
     lastTransaction: {
         type: Date
