@@ -6,9 +6,11 @@ import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
 import bcryptjs from 'bcryptjs'
 import { envVar } from "../../config/env.config";
+
+
 const credentialLogin = async (payload: Partial<IUser>) => {
     const { phoneNumber, password } = payload
-    const user = await User.findOne({ phoneNumber })
+    const user = await User.findOne({ phoneNumber }).populate("wallet")
     if (!user) {
         throw new AppError(statusCode.NOT_FOUND, "User not found")
     }
@@ -25,7 +27,7 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     const userToken = generateToken(JwtPayload, envVar.JWT_SECRET, envVar.JWT_EXPIRES_IN)
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: pass, ...userInfo } = user
+    const { password: pass, ...userInfo } = user.toObject()
     return {
         accessToken: userToken,
         data: userInfo
@@ -33,6 +35,8 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     }
 
 }
+
+
 
 export const authService = {
     credentialLogin
