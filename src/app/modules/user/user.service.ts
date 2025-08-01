@@ -1,3 +1,5 @@
+import AppError from "../../errorHelpers/AppError";
+import statusCode from "../../utils/statusCode";
 import { Wallet } from "../wallet/wallet.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
@@ -7,7 +9,7 @@ const createUser = async (payload: Partial<IUser>) => {
 
     const isExistUser = await User.findOne({ email: payload.email })
     if (isExistUser) {
-        throw new Error("User already exist with this phone number")
+        throw new AppError(statusCode.BAD_REQUEST, "User already exist with this phone number")
     }
 
     const user = await User.create(payload)
@@ -18,12 +20,23 @@ const createUser = async (payload: Partial<IUser>) => {
         balance: 100,
 
     })
-    const updatedUser = await User.findByIdAndUpdate(user._id, { walletID: wallet._id }, { new: true })
+    const updatedUser = await User.findByIdAndUpdate(user._id, { wallet: wallet._id }, { new: true })
 
     return updatedUser
 
 }
 
+const getUser = async () => {
+    const users = await User.find({}).populate("wallet")
+
+    const totalUser = await User.countDocuments()
+    return {
+        users,
+        totalUser
+    }
+}
+
 export const userService = {
-    createUser
+    createUser,
+    getUser
 }

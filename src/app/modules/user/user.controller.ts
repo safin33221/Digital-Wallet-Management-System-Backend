@@ -1,26 +1,43 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express"
 import { userService } from "./user.service"
+import { catchAsync } from "../../utils/catchAsync"
+import { sendResponse } from "../../utils/sendResponse"
 import statusCode from "http-status-codes"
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const user = await userService.createUser(req.body)
-        res.status(201).json({
-            success: true,
-            message: "user create successful",
-            data: user
-        })
-    } catch (error) { 
-        console.log(error);
-         res.status(201).json({
-            success: false,
-            message: "something is wrong",
-            data: error
-        })
-    }
+const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-}
+    const user = await userService.createUser(req.body)
+    sendResponse(res, {
+        statusCode: statusCode.CREATED,
+        success: true,
+        message: "User created successfully",
+        data: user
+
+    })
+
+
+})
+const getUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const users = await userService.getUser()
+    sendResponse(res, {
+        statusCode: statusCode.CREATED,
+        success: true,
+        message: "User created successfully",
+        data: users.users,
+        meta: {
+            total: users.totalUser
+        }
+
+    })
+
+
+})
+
+
+
 
 export const userController = {
-    createUser
+    createUser,
+    getUsers
 }

@@ -2,10 +2,10 @@ import { model, Schema } from "mongoose";
 import { IUser, Role } from "./user.interface";
 
 const userSchema = new Schema<IUser>({
-    walletID: {
+    wallet: {
         type: Schema.Types.ObjectId,
-        required: true,
-        unique: true
+        unique: true,
+        ref:"Wallet"
     },
     name: {
         type: String
@@ -46,10 +46,12 @@ const userSchema = new Schema<IUser>({
         type: Date,
         default: new Date(),
 
-    }
+    },
+    
 
 }, {
-    timestamps: true
+    timestamps: true,
+
 })
 
 export const User = model<IUser>("User", userSchema)
