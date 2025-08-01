@@ -20,12 +20,23 @@ const createUser = async (payload: Partial<IUser>) => {
         balance: 100,
 
     })
-    const updatedUser = await User.findByIdAndUpdate(user._id, { walletID: wallet._id }, { new: true })
+    const updatedUser = await User.findByIdAndUpdate(user._id, { wallet: wallet._id }, { new: true })
 
     return updatedUser
 
 }
 
+const getUser = async () => {
+    const users = await User.find({}).populate("wallet")
+
+    const totalUser = await User.countDocuments()
+    return {
+        users,
+        totalUser
+    }
+}
+
 export const userService = {
-    createUser
+    createUser,
+    getUser
 }

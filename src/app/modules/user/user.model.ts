@@ -2,9 +2,10 @@ import { model, Schema } from "mongoose";
 import { IUser, Role } from "./user.interface";
 
 const userSchema = new Schema<IUser>({
-    walletID: {
+    wallet: {
         type: Schema.Types.ObjectId,
-        unique: true
+        unique: true,
+        ref:"Wallet"
     },
     name: {
         type: String

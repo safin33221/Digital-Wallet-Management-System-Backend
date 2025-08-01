@@ -17,8 +17,27 @@ const createUser = catchAsync(async (req: Request, res: Response, next: NextFunc
 
 
 })
+const getUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const users = await userService.getUser()
+    sendResponse(res, {
+        statusCode: statusCode.CREATED,
+        success: true,
+        message: "User created successfully",
+        data: users.users,
+        meta: {
+            total: users.totalUser
+        }
+
+    })
+
+
+})
+
+
 
 
 export const userController = {
-    createUser
+    createUser,
+    getUsers
 }
