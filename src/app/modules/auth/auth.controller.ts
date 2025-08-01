@@ -1,0 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { NextFunction, Request, Response } from "express";
+import { catchAsync } from "../../utils/catchAsync";
+import { authService } from "./auth.service";
+import statusCode from "../../utils/statusCode";
+import { sendResponse } from "../../utils/sendResponse";
+
+const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const login = await authService.credentialLogin(req.body)
+
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "User login successfully",
+        data: {
+            user: login.data,
+            accessToken: login.accessToken
+        }
+
+    })
+})
+
+export const authController = {
+    credentialLogin
+}

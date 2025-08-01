@@ -1,8 +1,10 @@
+import { envVar } from "../../config/env.config";
 import AppError from "../../errorHelpers/AppError";
 import statusCode from "../../utils/statusCode";
 import { Wallet } from "../wallet/wallet.model";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
+import bcryptjs from 'bcryptjs'
 
 const createUser = async (payload: Partial<IUser>) => {
 
@@ -12,15 +14,20 @@ const createUser = async (payload: Partial<IUser>) => {
         throw new AppError(statusCode.BAD_REQUEST, "User already exist with this phone number")
     }
 
-    const user = await User.create(payload)
+    const hashPassword = await bcryptjs.hash(payload.password as string, Number(envVar.BCRYPT_SLAT))
+
+    const user = await User.create({
+        ...payload,
+        password: hashPassword,
+    })
 
 
-    const wallet = await Wallet.create({
+    const new_wallet = await Wallet.create({
         userId: user._id,
         balance: 100,
 
     })
-    const updatedUser = await User.findByIdAndUpdate(user._id, { wallet: wallet._id }, { new: true })
+    const updatedUser = await User.findByIdAndUpdate(user._id, { wallet: new_wallet._id }, { new: true })
 
     return updatedUser
 

@@ -4,8 +4,8 @@ import { IUser, Role } from "./user.interface";
 const userSchema = new Schema<IUser>({
     wallet: {
         type: Schema.Types.ObjectId,
+        ref:"Wallet",
         unique: true,
-        ref:"Wallet"
     },
     name: {
         type: String
