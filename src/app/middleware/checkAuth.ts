@@ -18,7 +18,7 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
         const verifiedToken = verifyToken(accessToken, envVar.JWT_SECRET) as JwtPayload
         req.user = verifiedToken
 
-        const user = await User.findOne({ email: verifiedToken.email })
+        const user = await User.findOne({ phoneNumber: verifiedToken.phoneNumber })
 
         if (!user) {
             throw new AppError(statusCode.NOT_FOUND, "User not found")
