@@ -15,12 +15,18 @@ export enum IPaymentMethods {
     rocket = 'rocket',
     manual = 'manual',
 }
+
+export enum ITransactionStatus {
+    pending = 'pending',
+    success = 'success',
+    failed = 'failed',
+}
 export interface ITransaction {
     _id?: string;
     user: Types.ObjectId;
     type: ITransactionTypes
     amount: number;
-    status: 'pending' | 'success' | 'failed';
+    status: ITransactionStatus;
     paymentMethod: IPaymentMethods;
     transactionId: string;
     description?: string;
