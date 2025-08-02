@@ -16,6 +16,7 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
             throw new AppError(statusCode.UNAUTHORIZED, "No token Received")
         }
         const verifiedToken = verifyToken(accessToken, envVar.JWT_SECRET) as JwtPayload
+        req.user = verifiedToken
 
         const user = await User.findOne({ email: verifiedToken.email })
 

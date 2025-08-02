@@ -21,7 +21,7 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     }
     const JwtPayload: JwtPayload = {
         userId: user._id,
-        email: user.email,
+        phoneNumber: user.phoneNumber,
         role: user.role
     }
     const userToken = generateToken(JwtPayload, envVar.JWT_SECRET, envVar.JWT_EXPIRES_IN)
