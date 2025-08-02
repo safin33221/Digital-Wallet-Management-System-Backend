@@ -28,7 +28,8 @@ const addMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload
         amount: payload.amount,
         status: ITransactionStatus.pending,
         transactionId: getTransactionId(),
-        paymentMethod: payload.paymentMethod
+        paymentMethod: payload.paymentMethod,
+
 
 
     })
@@ -39,6 +40,46 @@ const addMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload
 
 }
 
+
+const sendMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
+
+    if (payload.amount && payload?.amount <= 0) {
+        throw new AppError(statusCode.BAD_REQUEST, "Invalid amount")
+
+    }
+
+    const sender = await User.findOne({ phoneNumber: decodedToken.phoneNumber })
+    const receiver = await User.findOne({ phoneNumber: payload.to })
+    if (!sender) {
+        throw new AppError(statusCode.NOT_FOUND, "Sender not found")
+    }
+    if (!receiver) {
+        throw new AppError(statusCode.NOT_FOUND, "Receiver not found")
+    }
+
+
+    await Wallet.findByIdAndUpdate(sender.wallet, { $inc: { balance: -Number(payload.amount) }, lastTransaction: new Date() });
+
+    await Wallet.findByIdAndUpdate(receiver.wallet, { $inc: { balance: Number(payload.amount) }, lastTransaction: new Date() });
+    const transaction = await Transaction.create({
+        type: ITransactionTypes.transfer,
+        amount: payload.amount,
+        status: ITransactionStatus.success,
+        transactionId: getTransactionId(),
+        to: receiver.phoneNumber,
+        from: sender.phoneNumber
+
+
+
+    })
+    return transaction
+
+
+
+
+}
+
 export const transactionService = {
-    addMoney
+    addMoney,
+    sendMoney
 }

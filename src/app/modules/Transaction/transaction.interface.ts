@@ -23,14 +23,16 @@ export enum ITransactionStatus {
 }
 export interface ITransaction {
     _id?: string;
-    user: Types.ObjectId;
+    user?: Types.ObjectId;
     type: ITransactionTypes
     amount: number;
     status: ITransactionStatus;
-    paymentMethod: IPaymentMethods;
+    paymentMethod?: IPaymentMethods;
     transactionId: string;
     description?: string;
     approvedBy?: Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
+    to?: string;
+    from?: string;
 }

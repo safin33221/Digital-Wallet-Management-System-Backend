@@ -9,12 +9,26 @@ import { JwtPayload } from "jsonwebtoken"
 const addMoney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const verifiedToken = req.user as JwtPayload
-    const user = await transactionService.addMoney(req.body, verifiedToken)
+    const transaction = await transactionService.addMoney(req.body, verifiedToken)
     sendResponse(res, {
         statusCode: statusCode.OK,
         success: true,
-        message: "User Updated successfully",
-        data: user
+        message: "Money added successfully",
+        data: transaction
+
+    })
+
+
+})
+const sendMoney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const verifiedToken = req.user as JwtPayload
+    const transaction = await transactionService.sendMoney(req.body, verifiedToken)
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "Mony send successfully",
+        data: transaction
 
     })
 
@@ -23,5 +37,6 @@ const addMoney = catchAsync(async (req: Request, res: Response, next: NextFuncti
 
 
 export const transactionController = {
-    addMoney
+    addMoney,
+    sendMoney
 }

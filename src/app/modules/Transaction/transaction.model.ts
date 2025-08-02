@@ -26,11 +26,18 @@ const transactionSchema = new Schema<ITransaction>(
         paymentMethod: {
             type: String,
             enum: Object.values(IPaymentMethods),
-            required: true,
         },
         transactionId: {
             type: String,
             unique: true,
+        },
+        to: {
+            type: String,
+
+        },
+        from: {
+            type: String,
+
         },
         description: {
             type: String,
