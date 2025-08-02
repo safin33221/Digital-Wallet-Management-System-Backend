@@ -26,6 +26,7 @@ const addMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload
 
     const transaction = await Transaction.create({
         user: user._id,
+        owner: user.phoneNumber,
         type: ITransactionTypes.add_money,
         amount: payload.amount,
         status: ITransactionStatus.pending,
@@ -59,7 +60,6 @@ const sendMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayloa
         throw new AppError(statusCode.NOT_FOUND, "No available account on this number")
     }
     const balance = (sender.wallet as any).balance
-    console.log(balance);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     if (balance < payload.amount!) {
         throw new AppError(statusCode.BAD_REQUEST, "Insufficient balance")
@@ -70,6 +70,8 @@ const sendMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayloa
 
     await Wallet.findByIdAndUpdate(receiver.wallet, { $inc: { balance: Number(payload.amount) }, lastTransaction: new Date() });
     const transaction = await Transaction.create({
+        user: sender._id,
+        owner: sender.phoneNumber,
         type: ITransactionTypes.transfer,
         amount: payload.amount,
         status: ITransactionStatus.success,
@@ -116,6 +118,8 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
 
     await Wallet.findByIdAndUpdate(agent.wallet, { $inc: { balance: Number(payload.amount) }, lastTransaction: new Date() });
     const transaction = await Transaction.create({
+        user: user._id,
+        owner: user.phoneNumber,
         type: ITransactionTypes.transfer,
         amount: payload.amount,
         status: ITransactionStatus.success,
@@ -131,8 +135,18 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
 
 }
 
+const transactionHistory = async (decodedToken: JwtPayload) => {
+    const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate('wallet')
+    if (!user) {
+        throw new AppError(statusCode.NOT_FOUND, "User not found")
+    }
+    const transactions = await Transaction.find({ owner: user.phoneNumber }).sort({ createdAt: -1 })
+    return transactions
+}
+
 export const transactionService = {
     addMoney,
     sendMoney,
-    withdrawMoney
+    withdrawMoney,
+    transactionHistory
 }

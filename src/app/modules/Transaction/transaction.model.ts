@@ -9,6 +9,9 @@ const transactionSchema = new Schema<ITransaction>(
             type: Schema.Types.ObjectId,
             ref: "User",
         },
+        owner: {
+            type: String
+        },
         type: {
             type: String,
             enum: Object.values(ITransactionTypes),

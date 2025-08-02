@@ -36,4 +36,5 @@ export interface ITransaction {
     to?: string;
     from?: string;
     agentNumber?: string;
+    owner?:string
 }
