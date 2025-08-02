@@ -8,12 +8,10 @@ const transactionSchema = new Schema<ITransaction>(
         user: {
             type: Schema.Types.ObjectId,
             ref: "User",
-            required: true,
         },
         type: {
             type: String,
             enum: Object.values(ITransactionTypes),
-            required: true,
         },
         amount: {
             type: Number,
@@ -33,7 +31,6 @@ const transactionSchema = new Schema<ITransaction>(
         transactionId: {
             type: String,
             unique: true,
-            required: true,
         },
         description: {
             type: String,
@@ -48,5 +45,5 @@ const transactionSchema = new Schema<ITransaction>(
     }
 );
 
-const Transaction = model<ITransaction>("Transaction", transactionSchema);
-module.exports = Transaction;
+export const Transaction = model<ITransaction>("Transaction", transactionSchema);
+
