@@ -39,6 +39,10 @@ const transactionSchema = new Schema<ITransaction>(
             type: String,
 
         },
+        agentNumber: {
+            type: String,
+
+        },
         description: {
             type: String,
         },

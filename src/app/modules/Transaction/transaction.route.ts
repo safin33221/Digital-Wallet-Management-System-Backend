@@ -7,4 +7,5 @@ const router = Router()
 
 router.post("/add-money", checkAuth(Role.USER), transactionController.addMoney)
 router.post("/send-money", checkAuth(Role.USER), transactionController.sendMoney)
+router.post("/withdraw-money", checkAuth(Role.USER), transactionController.withdrawMoney)
 export const TransactionRoute = router

@@ -35,4 +35,5 @@ export interface ITransaction {
     updatedAt?: Date;
     to?: string;
     from?: string;
+    agentNumber?: string;
 }

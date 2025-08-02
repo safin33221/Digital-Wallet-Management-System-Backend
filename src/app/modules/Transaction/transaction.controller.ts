@@ -34,9 +34,24 @@ const sendMoney = catchAsync(async (req: Request, res: Response, next: NextFunct
 
 
 })
+const withdrawMoney = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const verifiedToken = req.user as JwtPayload
+    const transaction = await transactionService.withdrawMoney(req.body, verifiedToken)
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "Money withdrawn successfully",
+        data: transaction
+
+    })
+
+
+})
 
 
 export const transactionController = {
     addMoney,
-    sendMoney
+    sendMoney,
+    withdrawMoney
 }
