@@ -22,6 +22,12 @@ export interface IUser {
     role: Role;
     isVerified: boolean;
     status: IUserStatus;
+
+    //only for agents   `
+    approved: boolean
+    commissionRate: number
+    approvedBy: Types.ObjectId
+
     createdAt: Date;
     updatedAt: Date
 

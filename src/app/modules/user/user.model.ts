@@ -53,7 +53,14 @@ const userSchema = new Schema<IUser>({
         type: String,
         enum: Object.values(IUserStatus),
         default: IUserStatus.UNBLOCK
-    }
+    },
+
+    // Only relevant for AGENT
+    approved: { type: Boolean, default: false },
+    commissionRate: { type: Number },
+
+    // For admins
+    approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 
 
 }, {
