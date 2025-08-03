@@ -29,6 +29,9 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
 
         }
 
+       
+            
+
         if (!authRole.includes(verifiedToken.role)) {
             throw new AppError(statusCode.FORBIDDEN, "You'r not permitted to view this route")
         }

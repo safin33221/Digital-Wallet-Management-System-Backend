@@ -71,9 +71,15 @@ const sendMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayloa
 
     const user = await findUserByPhone(decodedToken.phoneNumber, "user not found");
     await checkPass(payload.password as string, user.password)
+
     const receiver = await findUserByPhone(payload.toUserPhone as string, "Receiver not found");
     if (receiver.status === IUserStatus.BLOCKED) {
         throw new AppError(statusCode.FORBIDDEN, `The account (${receiver.phoneNumber}) is blocked.`)
+    }
+
+    if (receiver.role !== Role.USER) {
+        throw new AppError(statusCode.FORBIDDEN, `You are not permitted to send money on any agent.`)
+
     }
 
     const userBalance = (user.wallet as any).balance;
@@ -103,9 +109,14 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
     await checkPass(payload.password as string, user.password)
 
 
+
     const agent = await findUserByPhone(payload.toUserPhone as string, "Agent not found");
     if (agent.role !== Role.AGENT) {
         throw new AppError(statusCode.BAD_REQUEST, "This number is not registered as an agent");
+    }
+    if (!agent.approved) {
+        throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
+
     }
 
     const userBalance = (user.wallet as any).balance;
@@ -131,9 +142,15 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
 const cashIn = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
 
+    //Agent 
     const user = await findUserByPhone(decodedToken.phoneNumber, "Agent not found");
     await checkPass(payload.password as string, user.password)
+    if (!user.approved) {
+        throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
 
+    }
+
+    //Customer
     const customer = await findUserByPhone(payload.toUserPhone as string, "User not found");
 
     await updateWalletBalance(user.wallet, -(payload.amount as number));
@@ -158,6 +175,8 @@ const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload)
     const user = await findUserByPhone(decodedToken.phoneNumber as string, "User not found");
     await checkPass(payload.password as string, user.password)
 
+
+
     const userBalance = (user.wallet as any).balance;
     if (userBalance < (payload.amount as number)) {
         throw new AppError(statusCode.BAD_REQUEST, "Insufficient balance");
@@ -166,6 +185,10 @@ const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload)
     const agent = await findUserByPhone(payload.toUserPhone as string, "Agent not found");
     if (agent.role !== Role.AGENT) {
         throw new AppError(statusCode.NOT_FOUND, "Invalid agent number")
+    }
+    if (!agent.approved) {
+        throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
+
     }
 
     await updateWalletBalance(user.wallet, -(payload.amount as number));
