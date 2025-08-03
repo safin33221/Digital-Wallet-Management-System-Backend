@@ -13,6 +13,7 @@ router.get("/history", checkAuth(Role.USER), transactionController.transactionHi
 
 //Agents transaction
 router.post("/cash-in", checkAuth(Role.AGENT), transactionController.cashIn)
+router.post("/cash-out", checkAuth(Role.USER), transactionController.cashOut)
 
 
 export const TransactionRoute = router
