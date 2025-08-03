@@ -5,12 +5,16 @@ import { IPaymentMethods, ITransaction, ITransactionStatus, ITransactionTypes } 
 
 const transactionSchema = new Schema<ITransaction>(
     {
-        user: {
+        userId: {
             type: Schema.Types.ObjectId,
             ref: "User",
         },
-        owner: {
-            type: String
+        password: {
+            type: String,
+        
+        },
+        userPhone: {
+            type: String,
         },
         type: {
             type: String,
@@ -34,17 +38,13 @@ const transactionSchema = new Schema<ITransaction>(
             type: String,
             unique: true,
         },
-        to: {
-            type: String,
+        toUserId: {
+            type: Schema.Types.ObjectId,
+            ref: "User"
 
         },
-        from: {
+        toUserPhone: {
             type: String,
-
-        },
-        agentNumber: {
-            type: String,
-
         },
         description: {
             type: String,

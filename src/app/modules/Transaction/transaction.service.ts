@@ -6,8 +6,9 @@ import { User } from "../user/user.model";
 import { Wallet } from "../wallet/wallet.model";
 import { Transaction } from "./transaction.model";
 import { ITransaction, ITransactionStatus, ITransactionTypes } from "./transaction.interface";
-import { Role } from "../user/user.interface";
+import { IUserStatus, Role } from "../user/user.interface";
 import { getTransactionId } from "../../utils/transactionId";
+import bcryptjs from "bcryptjs";
 
 // ──────── Helpers ───────── //
 
@@ -31,15 +32,24 @@ const updateWalletBalance = async (walletId: any, amount: number) => {
     });
 };
 
+
+const checkPass = async (payloadPassword: string, userPassword: string) => {
+    const password = await bcryptjs.compare(payloadPassword, userPassword)
+    if (!password) {
+        throw new AppError(statusCode.BAD_REQUEST, "Invalid Password")
+    }
+}
 // ──────── Services ───────── //
 
 const addMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
     const user = await findUserByPhone(decodedToken.phoneNumber);
+    await checkPass(payload.password as string, user.password)
+
 
     const transaction = await Transaction.create({
-        user: user._id,
-        owner: user.phoneNumber,
+        userId: user._id,
+        userPhone: user.phoneNumber,
         type: ITransactionTypes.add_money,
         amount: payload.amount,
         status: ITransactionStatus.pending,
@@ -59,35 +69,41 @@ const addMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload
 const sendMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
 
-    const sender = await findUserByPhone(decodedToken.phoneNumber, "Sender not found");
-    const receiver = await findUserByPhone(payload.to as string, "Receiver not found");
+    const user = await findUserByPhone(decodedToken.phoneNumber, "user not found");
+    await checkPass(payload.password as string, user.password)
+    const receiver = await findUserByPhone(payload.toUserPhone as string, "Receiver not found");
+    if (receiver.status === IUserStatus.BLOCKED) {
+        throw new AppError(statusCode.FORBIDDEN, `The account (${receiver.phoneNumber}) is blocked.`)
+    }
 
-    const senderBalance = (sender.wallet as any).balance;
-    if (senderBalance < (payload.amount as number)) {
+    const userBalance = (user.wallet as any).balance;
+    if (userBalance < (payload.amount as number)) {
         throw new AppError(statusCode.BAD_REQUEST, "Insufficient balance");
     }
 
-    await updateWalletBalance(sender.wallet, -(payload.amount as number));
+    await updateWalletBalance(user.wallet, -(payload.amount as number));
     await updateWalletBalance(receiver.wallet, payload.amount as number);
 
     return await Transaction.create({
-        user: sender._id,
-        owner: sender.phoneNumber,
+        userId: user._id,
+        userPhone: user.phoneNumber,
         type: ITransactionTypes.transfer,
         amount: payload.amount,
         status: ITransactionStatus.success,
         transactionId: getTransactionId(),
-        from: sender.phoneNumber,
-        to: receiver.phoneNumber,
+        toUserPhone: receiver.phoneNumber,
+        toUserId: receiver._id,
     });
 };
 
 const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
 
-    const agent = await findUserByPhone(payload.agentNumber as string, "Agent not found");
     const user = await findUserByPhone(decodedToken.phoneNumber, "User not found");
+    await checkPass(payload.password as string, user.password)
 
+
+    const agent = await findUserByPhone(payload.toUserPhone as string, "Agent not found");
     if (agent.role !== Role.AGENT) {
         throw new AppError(statusCode.BAD_REQUEST, "This number is not registered as an agent");
     }
@@ -101,43 +117,53 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
     await updateWalletBalance(agent.wallet, payload.amount as number);
 
     return await Transaction.create({
-        user: user._id,
-        owner: user.phoneNumber,
-        type: ITransactionTypes.transfer,
+        userId: user._id,
+        userPhone: user.phoneNumber,
+        type: ITransactionTypes.withdraw,
         amount: payload.amount,
         status: ITransactionStatus.success,
         transactionId: getTransactionId(),
-        from: user.phoneNumber,
-        to: agent.phoneNumber,
+        toUserId: agent._id,
+        toUserPhone: agent.phoneNumber,
     });
 };
 
 const cashIn = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
 
-    const user = await findUserByPhone(payload.to as string, "User not found");
-    const agent = await findUserByPhone(decodedToken.phoneNumber, "Agent not found");
+    const user = await findUserByPhone(decodedToken.phoneNumber, "Agent not found");
+    await checkPass(payload.password as string, user.password)
 
-    await updateWalletBalance(agent.wallet, -(payload.amount as number));
-    await updateWalletBalance(user.wallet, payload.amount as number);
+    const customer = await findUserByPhone(payload.toUserPhone as string, "User not found");
+
+    await updateWalletBalance(user.wallet, -(payload.amount as number));
+    await updateWalletBalance(customer.wallet, payload.amount as number);
 
     return await Transaction.create({
-        user: user._id,
-        owner: user.phoneNumber,
+        userId: user._id,
+        userPhone: user.phoneNumber,
         type: ITransactionTypes.cashIn,
         amount: payload.amount,
         status: ITransactionStatus.success,
         transactionId: getTransactionId(),
-        from: agent.phoneNumber,
-        to: user.phoneNumber,
+        toUserPhone: customer.phoneNumber,
+        toUserId: customer._id,
     });
 };
 
 const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
     validateAmount(payload.amount);
 
-    const user = await findUserByPhone(payload.to as string, "User not found");
-    const agent = await findUserByPhone(decodedToken.phoneNumber, "Agent not found");
+
+    const user = await findUserByPhone(decodedToken.phoneNumber as string, "User not found");
+    await checkPass(payload.password as string, user.password)
+
+    const userBalance = (user.wallet as any).balance;
+    if (userBalance < (payload.amount as number)) {
+        throw new AppError(statusCode.BAD_REQUEST, "Insufficient balance");
+    }
+
+    const agent = await findUserByPhone(payload.toUserPhone as string, "Agent not found");
     if (agent.role !== Role.AGENT) {
         throw new AppError(statusCode.NOT_FOUND, "Invalid agent number")
     }
@@ -146,20 +172,20 @@ const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload)
     await updateWalletBalance(agent.wallet, payload.amount as number);
 
     return await Transaction.create({
-        user: user._id,
-        owner: user.phoneNumber,
+        userId: user._id,
+        userPhone: user.phoneNumber,
         type: ITransactionTypes.cashOut,
         amount: payload.amount,
         status: ITransactionStatus.success,
         transactionId: getTransactionId(),
-        from: user.phoneNumber,
-        to: agent.phoneNumber,
+        toUserId: agent._id,
+        toUserPhone: agent.phoneNumber,
     });
 };
 
 const transactionHistory = async (decodedToken: JwtPayload) => {
     const user = await findUserByPhone(decodedToken.phoneNumber, "User not found");
-    return await Transaction.find({ owner: user.phoneNumber }).sort({ createdAt: -1 });
+    return await Transaction.find({ userPhone: user.phoneNumber }).sort({ createdAt: -1 });
 };
 
 // ──────── Export ───────── //

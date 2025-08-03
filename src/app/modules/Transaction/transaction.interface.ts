@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Schema, Types } from "mongoose";
 
 export enum ITransactionTypes {
     add_money = 'add_money',
@@ -28,17 +28,19 @@ export interface ITransaction {
     type: ITransactionTypes
     amount: number;
     status: ITransactionStatus;
-    user?: Types.ObjectId;
+
+    userId?: Types.ObjectId;
+    password: string
+    userPhone: string;
+
     paymentMethod?: IPaymentMethods;
     transactionId: string;
     description?: string;
     approvedBy?: Types.ObjectId;
 
-    to?: string;
-    from?: string;
+    toUserId?: Schema.Types.ObjectId;
+    toUserPhone?: string;
 
-    agentNumber?: string;
-    owner?: string
     createdAt?: Date;
     updatedAt?: Date;
 }
