@@ -57,6 +57,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         if (decodedToken.role === Role.USER || decodedToken.role === Role.AGENT) {
             throw new AppError(statusCode.BAD_REQUEST, "Your are not authorize to change role")
         }
+        
 
     }
     if (payload.phoneNumber) {

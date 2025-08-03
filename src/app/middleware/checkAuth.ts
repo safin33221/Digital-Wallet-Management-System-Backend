@@ -5,6 +5,7 @@ import { envVar } from "../config/env.config";
 import { JwtPayload } from "jsonwebtoken";
 import { verifyToken } from "../utils/jwt";
 import { User } from "../modules/user/user.model";
+import { IUserStatus } from "../modules/user/user.interface";
 
 
 export const checkAuth = (...authRole: string[]) => async (req: Request, res: Response, next: NextFunction) => {
@@ -23,9 +24,13 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
         if (!user) {
             throw new AppError(statusCode.NOT_FOUND, "User not found")
         }
+        if (user.status === IUserStatus.BLOCKED) {
+            throw new AppError(statusCode.FORBIDDEN, " Your wallet is blocked. Please contact support.")
+
+        }
 
         if (!authRole.includes(verifiedToken.role)) {
-            throw new AppError(403, "You'r not permitted to view this route")
+            throw new AppError(statusCode.FORBIDDEN, "You'r not permitted to view this route")
         }
         next()
 

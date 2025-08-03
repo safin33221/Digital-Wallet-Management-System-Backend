@@ -6,6 +6,11 @@ export enum Role {
     USER = "USER"
 
 }
+
+export enum IUserStatus {
+    BLOCKED = 'BLOCKED',
+    UNBLOCK = 'UNBLOCK'
+}
 export interface IUser {
     _id?: Types.ObjectId,
     wallet?: Types.ObjectId;
@@ -16,6 +21,7 @@ export interface IUser {
     password: string;
     role: Role;
     isVerified: boolean;
+    status: IUserStatus;
     createdAt: Date;
     updatedAt: Date
 
