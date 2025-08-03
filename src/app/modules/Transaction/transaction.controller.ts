@@ -62,9 +62,24 @@ const transactionHistory = catchAsync(async (req: Request, res: Response, next: 
 
 
 
+const cashIn = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const verifiedToken = req.user as JwtPayload
+    const transactions = await transactionService.cashIn(req.body, verifiedToken)
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: " Cash in successfully",
+        data: transactions
+    })
+})
+
+
+
 export const transactionController = {
     addMoney,
     sendMoney,
     withdrawMoney,
-    transactionHistory
+    transactionHistory,
+    cashIn
 }

@@ -135,6 +135,39 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
 
 }
 
+const cashIn = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
+    const user = await User.findOne({ phoneNumber: payload.to }).populate('wallet')
+    const agent = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate('wallet')
+
+    if (!user) {
+        throw new AppError(statusCode.NOT_FOUND, 'No user found in this number')
+    }
+    if (!agent) {
+        throw new AppError(statusCode.NOT_FOUND, 'something went wrong')
+
+    }
+
+    await Wallet.findByIdAndUpdate(agent.wallet, { $inc: { balance: -Number(payload.amount) }, lastTransaction: new Date() });
+
+    await Wallet.findByIdAndUpdate(user.wallet, { $inc: { balance: Number(payload.amount) }, lastTransaction: new Date() });
+
+    const transaction = await Transaction.create({
+        user: user._id,
+        owner: user.phoneNumber,
+        type: ITransactionTypes.cashIn,
+        amount: payload.amount,
+        status: ITransactionStatus.success,
+        transactionId: getTransactionId(),
+        to: agent.phoneNumber,
+        from: user.phoneNumber
+
+
+
+    })
+    return transaction
+
+}
+
 const transactionHistory = async (decodedToken: JwtPayload) => {
     const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate('wallet')
     if (!user) {
@@ -148,5 +181,6 @@ export const transactionService = {
     addMoney,
     sendMoney,
     withdrawMoney,
-    transactionHistory
+    transactionHistory,
+    cashIn
 }

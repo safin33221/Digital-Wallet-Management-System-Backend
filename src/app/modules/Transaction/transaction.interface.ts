@@ -5,6 +5,8 @@ export enum ITransactionTypes {
     withdraw = 'withdraw',
     transfer = 'transfer',
     payment = 'payment',
+    cashIn = 'cashIn',
+    cashOut = 'cashOut',
 }
 
 export enum IPaymentMethods {
@@ -23,18 +25,20 @@ export enum ITransactionStatus {
 }
 export interface ITransaction {
     _id?: string;
-    user?: Types.ObjectId;
     type: ITransactionTypes
     amount: number;
     status: ITransactionStatus;
+    user?: Types.ObjectId;
     paymentMethod?: IPaymentMethods;
     transactionId: string;
     description?: string;
     approvedBy?: Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
+
     to?: string;
     from?: string;
+
     agentNumber?: string;
-    owner?:string
+    owner?: string
+    createdAt?: Date;
+    updatedAt?: Date;
 }

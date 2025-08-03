@@ -9,4 +9,10 @@ router.post("/add-money", checkAuth(Role.USER), transactionController.addMoney)
 router.post("/send-money", checkAuth(Role.USER), transactionController.sendMoney)
 router.post("/withdraw-money", checkAuth(Role.USER), transactionController.withdrawMoney)
 router.get("/history", checkAuth(Role.USER), transactionController.transactionHistory)
+
+
+//Agents transaction
+router.post("/cash-in", checkAuth(Role.AGENT), transactionController.cashIn)
+
+
 export const TransactionRoute = router
