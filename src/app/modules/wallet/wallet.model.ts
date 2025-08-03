@@ -5,7 +5,8 @@ import { IWallet, kycStatus } from "./wallet.interface";
 const walletSchema = new Schema<IWallet>({
     userId: {
         type: Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        unique: true
     },
     balance: {
         type: Number,

@@ -1,14 +1,16 @@
 import { model, Schema } from "mongoose";
-import { IUser, Role } from "./user.interface";
+import { IUser, IUserStatus, Role } from "./user.interface";
 
 const userSchema = new Schema<IUser>({
     wallet: {
         type: Schema.Types.ObjectId,
+        ref: "Wallet",
         unique: true,
-        ref:"Wallet"
     },
     name: {
-        type: String
+        type: String,
+        required: true,
+
     },
     email: {
         type: String,
@@ -47,7 +49,19 @@ const userSchema = new Schema<IUser>({
         default: new Date(),
 
     },
-    
+    status: {
+        type: String,
+        enum: Object.values(IUserStatus),
+        default: IUserStatus.UNBLOCK
+    },
+
+    // Only relevant for AGENT
+    approved: { type: Boolean, default: false },
+    commissionRate: { type: Number },
+
+    // For admins
+    approvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+
 
 }, {
     timestamps: true,
