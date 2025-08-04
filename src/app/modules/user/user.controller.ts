@@ -22,9 +22,9 @@ const getUsers = catchAsync(async (req: Request, res: Response, next: NextFuncti
 
     const users = await userService.getUser()
     sendResponse(res, {
-        statusCode: statusCode.CREATED,
+        statusCode: statusCode.OK,
         success: true,
-        message: "User created successfully",
+        message: "User Get successfully",
         data: users.users,
         meta: {
             total: users.totalUser
