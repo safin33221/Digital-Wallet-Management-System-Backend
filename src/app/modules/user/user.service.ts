@@ -8,7 +8,6 @@ import { User } from "./user.model";
 import bcryptjs from 'bcryptjs'
 
 const createUser = async (payload: Partial<IUser>) => {
-    console.log(payload);
 
     const isExistUser = await User.findOne({ phoneNumber: payload.phoneNumber })
     if (isExistUser) {

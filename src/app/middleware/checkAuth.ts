@@ -22,15 +22,15 @@ export const checkAuth = (...authRole: string[]) => async (req: Request, res: Re
         const user = await User.findOne({ phoneNumber: verifiedToken.phoneNumber })
 
         if (!user) {
-            throw new AppError(statusCode.NOT_FOUND, "User not found")
+            throw new AppError(statusCode.NOT_FOUND, "No user exist in this token !")
         }
         if (user.status === IUserStatus.BLOCKED) {
             throw new AppError(statusCode.FORBIDDEN, " Your wallet is blocked. Please contact support.")
 
         }
 
-       
-            
+
+
 
         if (!authRole.includes(verifiedToken.role)) {
             throw new AppError(statusCode.FORBIDDEN, "You'r not permitted to view this route")

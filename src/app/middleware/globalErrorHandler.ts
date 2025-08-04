@@ -10,6 +10,7 @@ import { IErrorSource } from "../interface/error.type";
 
 export const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
     if (envVar.NODE_DEV === 'DEVELOPMENT') {
+
         console.log(err);
     }
     let statusCode = 500
