@@ -19,6 +19,23 @@ const getMyWallet = catchAsync(async (req: Request, res: Response, next: NextFun
 
 
 })
+const getAllWallet = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+
+    const wallet = await walletService.getAllWallet()
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "All Wallets Find successfully",
+        data: wallet.allWallet,
+        meta: {
+            total: wallet.totalWallet
+        }
+
+    })
+
+
+})
 export const walletController = {
-    getMyWallet
+    getMyWallet,
+    getAllWallet
 }
