@@ -9,13 +9,14 @@ const transactionSchema = new Schema<ITransaction>(
             type: Schema.Types.ObjectId,
             ref: "User",
         },
-        password: {
-            type: String,
-        
-        },
         userPhone: {
             type: String,
         },
+        password: {
+            type: String,
+
+        },
+
         type: {
             type: String,
             enum: Object.values(ITransactionTypes),
@@ -38,6 +39,7 @@ const transactionSchema = new Schema<ITransaction>(
             type: String,
             unique: true,
         },
+
         toUserId: {
             type: Schema.Types.ObjectId,
             ref: "User"

@@ -206,10 +206,17 @@ const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload)
     });
 };
 
-const transactionHistory = async (decodedToken: JwtPayload) => {
+const myTransactionHistory = async (decodedToken: JwtPayload) => {
     const user = await findUserByPhone(decodedToken.phoneNumber, "User not found");
     return await Transaction.find({ userPhone: user.phoneNumber }).sort({ createdAt: -1 });
 };
+
+const getAllTransaction = async () => {
+    const allTransaction = await Transaction.find({})
+    return allTransaction
+}
+
+
 
 // ──────── Export ───────── //
 
@@ -217,7 +224,8 @@ export const transactionService = {
     addMoney,
     sendMoney,
     withdrawMoney,
-    transactionHistory,
+    myTransactionHistory,
     cashIn,
     cashOut,
+    getAllTransaction
 };
