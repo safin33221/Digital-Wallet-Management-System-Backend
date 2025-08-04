@@ -8,6 +8,7 @@ import { User } from "./user.model";
 import bcryptjs from 'bcryptjs'
 
 const createUser = async (payload: Partial<IUser>) => {
+    console.log(payload);
 
     const isExistUser = await User.findOne({ phoneNumber: payload.phoneNumber })
     if (isExistUser) {
@@ -57,7 +58,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         if (decodedToken.role === Role.USER || decodedToken.role === Role.AGENT) {
             throw new AppError(statusCode.BAD_REQUEST, "Your are not authorize to change role")
         }
-        
+
 
     }
     if (payload.phoneNumber) {
