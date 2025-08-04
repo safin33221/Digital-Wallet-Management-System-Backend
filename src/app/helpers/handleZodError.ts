@@ -11,7 +11,6 @@ export const handleZodError = (err: any): IGenericErrorResponse => {
             
         })
     });
-    console.log(errorSources);
     return {
         statusCode: 400,
         message: "Zod Error",

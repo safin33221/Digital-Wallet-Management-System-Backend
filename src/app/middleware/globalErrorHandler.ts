@@ -27,6 +27,12 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         message = simplified.message
         errorSources = simplified.errorSources as IErrorSource[]
     }
+    else if (err.name === 'CastError') {
+        const simplified = handleZodError(err)
+        statusCode = simplified.statusCode;
+        message = simplified.message
+       
+    }
     else if (err instanceof AppError) {
         statusCode = err.statusCode
         message = err.message
