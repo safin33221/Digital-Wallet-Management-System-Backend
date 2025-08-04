@@ -19,4 +19,8 @@ router.patch("/:userId",
     checkAuth(...Object.values(Role)),
     userController.updatedUser)
 
+router.get('/me',
+    checkAuth(...Object.values(Role)),
+    userController.getMe)
+
 export const UserRoutes = router 

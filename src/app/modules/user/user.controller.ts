@@ -35,6 +35,17 @@ const getUsers = catchAsync(async (req: Request, res: Response, next: NextFuncti
 
 })
 
+const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const verifiedToken = req.user as JwtPayload
+    const user = await userService.getMe(verifiedToken)
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "User Get successfully",
+        data: user
+    })
+})
+
 const updatedUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId
     const verifiedToken = req.user as JwtPayload
@@ -56,5 +67,6 @@ const updatedUser = catchAsync(async (req: Request, res: Response, next: NextFun
 export const userController = {
     createUser,
     getUsers,
-    updatedUser
+    updatedUser,
+    getMe
 }

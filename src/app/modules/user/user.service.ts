@@ -11,7 +11,7 @@ const createUser = async (payload: Partial<IUser>) => {
 
     const isExistUser = await User.findOne({ phoneNumber: payload.phoneNumber })
     if (isExistUser) {
-        throw new AppError(statusCode.BAD_REQUEST, "Already have an account in this phone number")
+        throw new AppError(statusCode.CONFLICT, "Already have an account in this phone number")
     }
 
     if (payload.role !== Role.USER && payload.role !== Role.AGENT) {
@@ -38,7 +38,7 @@ const createUser = async (payload: Partial<IUser>) => {
 }
 
 const getUser = async () => {
-    const users = await User.find({}).populate("wallet")
+    const users = await User.find({}).populate("wallet").select("-password -__v")
 
 
     const totalUser = await User.countDocuments()
@@ -48,14 +48,22 @@ const getUser = async () => {
     }
 }
 
+const getMe = async (decodedToken: JwtPayload) => {
+    const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate("wallet").select("-password -__v")
+    if (!user) {
+        throw new AppError(statusCode.NOT_FOUND, "user not found")
+    }
+    return user
+}
+
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
     const user = await User.findById(userId)
     if (!user) {
         throw new AppError(statusCode.NOT_FOUND, "user not found")
     }
-    if (payload.role || payload.isVerified) {
+    if (payload.role || payload.isVerified || payload.status || payload.approved || payload.commissionRate) {
         if (decodedToken.role === Role.USER || decodedToken.role === Role.AGENT) {
-            throw new AppError(statusCode.BAD_REQUEST, "Your are not authorize to change role")
+            throw new AppError(statusCode.UNAUTHORIZED, "Only Admin can change role, verified, status, approved or commission rate")
         }
 
 
@@ -73,5 +81,6 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 export const userService = {
     createUser,
     getUser,
-    updateUser
+    updateUser,
+    getMe
 }
