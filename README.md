@@ -4,21 +4,6 @@ A secure, modular, and role-based RESTful API for managing a digital wallet syst
 
 ---
 
-## 📚 Table of Contents
-
-- [Project Overview](#-project-overview)
-- [Features](#-features)
-- [Installation](#-installation)
-- [Configuration](#-configuration)
-- [API Endpoints](#-api-endpoints)
-- [Usage](#-usage)
-- [Examples](#-examples)
-- [Troubleshooting](#-troubleshooting)
-- [Dependencies](#-dependencies)
-- [Contributors](#-contributors)
-- [License](#-license)
-
----
 
 ## 🎯 Project Overview
 
@@ -33,39 +18,46 @@ This project implements a **role-based digital wallet management system** with:
 - ✅ Modular service-layer-based architecture
 
 ---
-
 ## 📡 API Endpoints
 
 ### 🔐 Auth
 
-| Method | Endpoint                | Description     |
-|--------|-------------------------|-----------------|
-| POST   | `/api/v1/auth/login`    | User login      |
-| POST   | `/api/v1/auth/logout`   | User logout     |
+| Method | Endpoint               | Description   |
+|--------|------------------------|---------------|
+| POST   | `/api/v1/auth/login`   | User login    |
+| POST   | `/api/v1/auth/logout`  | User logout   |
 
 ### 👤 User
 
-| Method | Endpoint             | Description           |
-|--------|----------------------|-----------------------|
-| GET    | `/api/v1/user`       | Get all users (admin) |
-| PATCH  | `/api/v1/user/:id`   | Update user (admin)   |
+| Method | Endpoint                   | Description            |
+|--------|----------------------------|------------------------|
+| POST   | `/api/v1/user/create`      | Create a new user      |
+| PATCH  | `/api/v1/user/:id`         | Update user (admin)    |
+| GET    | `/api/v1/user`             | Get all users (admin)  |
 
 ### 💼 Wallet
 
-| Method | Endpoint                | Description          |
-|--------|-------------------------|----------------------|
-| GET    | `/api/v1/wallet/me`     | View own wallet info |
+| Method | Endpoint              | Description            |
+|--------|-----------------------|------------------------|
+| GET    | `/api/v1/wallet/me`   | View own wallet info   |
 
 ### 💸 Transactions
 
-| Method | Endpoint                                 | Description                   |
-|--------|------------------------------------------|-------------------------------|
-| POST   | `/api/v1/transaction/add-money`          | Add money                     |
-| POST   | `/api/v1/transaction/send-money`         | Send money to another user    |
-| POST   | `/api/v1/transaction/withdraw-money`     | Withdraw using agent          |
-| GET    | `/api/v1/transaction/history`            | View transaction history      |
-| POST   | `/api/v1/transaction/cash-in`            | Agent: Add money to user      |
-| POST   | `/api/v1/transaction/cash-out`           | Agent: Withdraw from user     |
+| Method | Endpoint                                | Description                       |
+|--------|-----------------------------------------|-----------------------------------|
+| POST   | `/api/v1/transaction/add-money`         | Add money to wallet               |
+| POST   | `/api/v1/transaction/send-money`        | Send money to another user        |
+| POST   | `/api/v1/transaction/withdraw-money`    | Withdraw money from wallet        |
+| GET    | `/api/v1/transaction/my-transaction`    | View personal transaction history |
+| GET    | `/api/v1/transaction/all-transaction`   | View all transactions (admin)     |
+
+### 🧾 Agent Transactions
+
+| Method | Endpoint                             | Description          |
+|--------|--------------------------------------|----------------------|
+| POST   | `/api/v1/transaction/cash-in`        | Cash in (Agent only) |
+| POST   | `/api/v1/transaction/cash-out`       | Cash out (Agent only) |
+
 
 
 ## ✨ Features
