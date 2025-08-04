@@ -18,7 +18,9 @@ export const globalErrorHandler = (err: any, req: Request, res: Response, next: 
         statusCode = simplified.statusCode;
         message = simplified.message
     }
- 
+    else if(err.name === 'ZodError'){
+        
+    }
     else if (err instanceof AppError) {
         statusCode = err.statusCode
         message = err.message
