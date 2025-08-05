@@ -1,11 +1,9 @@
-import { JwtPayload } from "jsonwebtoken";
 import AppError from "../../errorHelpers/AppError";
-import { generateToken } from "../../utils/jwt";
 import statusCode from "../../utils/statusCode";
 import { IUser } from "../user/user.interface";
 import { User } from "../user/user.model";
-import bcryptjs from 'bcryptjs'
-import { envVar } from "../../config/env.config";
+import bcryptjs from 'bcryptjs';
+import { createNewAccessTokenWithRefreshToken, createToken } from "../../utils/userToken";
 
 
 const credentialLogin = async (payload: Partial<IUser>) => {
@@ -19,25 +17,32 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     if (!matchPassword) {
         throw new AppError(statusCode.UNAUTHORIZED, "Incorrect password")
     }
-    const JwtPayload: JwtPayload = {
-        userId: user._id,
-        phoneNumber: user.phoneNumber,
-        role: user.role
-    }
-    const userToken = generateToken(JwtPayload, envVar.JWT_SECRET, envVar.JWT_EXPIRES_IN)
+
+    const userToken = createToken(user)
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: pass, ...userInfo } = user.toObject()
     return {
-        accessToken: userToken,
-        data: userInfo
-
+        accessToken: userToken.accessToken,
+        refreshToken: userToken.refreshToken,
+        user: userInfo
     }
 
+}
+const getNewAccessToken = async (refreshToken: string) => {
+
+    const newAccessToken = await createNewAccessTokenWithRefreshToken(refreshToken)
+
+    return { accessToken: newAccessToken }
 }
 
 
 
+
+
+
 export const authService = {
-    credentialLogin
+    credentialLogin,
+    getNewAccessToken
+
 }
