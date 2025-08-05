@@ -96,10 +96,34 @@ cd Digital-Wallet-Management-System-Backend
 # Install dependencies
 pnpm install
 
+
+```
+
+```bash
+
+##  Set Up Environment
 # Create environment file
 cp .env.example .env
 
+
+
+PORT=5000
+MONGODB_URI=mongodb+srv://Digital-Wallet-Management:<your_password>@cluster0.blz8y.mongodb.net/digital-wallet?retryWrites=true&w=majority&appName=Cluster0
+NODE_DEV=DEVELOPMENT
+BCRYPT_SLAT=10
+JWT_SECRET=jwt_sceret
+JWT_REFRESH_SECRET=jwt_refresh_secret
+JWT_EXPIRES_IN=50d
+JWT_REFRESH_EXPIRES_IN=30d
+
+
+
 # Start server (dev mode)
 npm run dev
+
+```
+
+
+
 
 
