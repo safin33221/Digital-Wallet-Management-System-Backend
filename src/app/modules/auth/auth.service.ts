@@ -26,6 +26,7 @@ const credentialLogin = async (payload: Partial<IUser>) => {
     }
     const userToken = generateToken(JwtPayload, envVar.JWT_SECRET, envVar.JWT_EXPIRES_IN)
 
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: pass, ...userInfo } = user.toObject()
     return {
