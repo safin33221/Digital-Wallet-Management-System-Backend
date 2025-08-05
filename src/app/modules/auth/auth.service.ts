@@ -20,6 +20,7 @@ const credentialLogin = async (payload: Partial<IUser>) => {
 
     const userToken = createToken(user)
 
+
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: pass, ...userInfo } = user.toObject()
     return {
