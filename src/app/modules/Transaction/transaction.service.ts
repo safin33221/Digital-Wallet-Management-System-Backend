@@ -115,7 +115,7 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
         throw new AppError(statusCode.BAD_REQUEST, "This number is not registered as an agent");
     }
     if (!agent.approved) {
-        throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
+        throw new AppError(statusCode.BAD_REQUEST, "This account is not approved as an agent yet")
 
     }
 
@@ -187,7 +187,7 @@ const cashOut = async (payload: Partial<ITransaction>, decodedToken: JwtPayload)
         throw new AppError(statusCode.NOT_FOUND, "Invalid agent number")
     }
     if (!agent.approved) {
-        throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
+        throw new AppError(statusCode.BAD_REQUEST, "This account is not approved as an agent yet")
 
     }
 

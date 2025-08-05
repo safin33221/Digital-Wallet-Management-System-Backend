@@ -25,9 +25,9 @@ export enum ITransactionStatus {
 }
 export interface ITransaction {
     _id?: string;
-    type: ITransactionTypes
+    type?: ITransactionTypes
     amount: number;
-    status: ITransactionStatus;
+    status?: ITransactionStatus;
 
     userId?: Types.ObjectId;
     password: string
