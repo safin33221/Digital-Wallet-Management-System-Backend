@@ -11,9 +11,7 @@ import { IUserStatus } from "../modules/user/user.interface";
 export const checkAuth = (...authRole: string[]) => async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        console.log(req);
-
-        console.log(await req.cookies.accessToken);
+    
 
         const accessToken = req.headers.authorization || req.cookies.accessToken;
 

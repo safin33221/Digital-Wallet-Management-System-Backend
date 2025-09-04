@@ -37,8 +37,10 @@ const createUser = async (payload: Partial<IUser>) => {
 
 }
 
-const getUser = async () => {
-    const users = await User.find({}).populate("wallet").select("-password -__v")
+const getUser = async (query: Record<string, string>) => {
+    console.log(query);
+
+    const users = await User.find(query).populate("wallet").select("-password -__v")
 
 
     const totalUser = await User.countDocuments()
