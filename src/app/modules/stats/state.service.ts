@@ -1,3 +1,4 @@
+import { Transaction } from "../Transaction/transaction.model"
 import { IUserStatus, Role } from "../user/user.interface"
 import { User } from "../user/user.model"
 
@@ -41,4 +42,20 @@ const getUserState = async () => {
     }
 }
 
-export const statService = { getUserState }
+const getTransactionStat = async () => {
+    const totalTransactionPromise = Transaction.countDocuments()
+
+    const [
+        totalTransaction
+    ] = await Promise.all([
+        totalTransactionPromise
+    ])
+    return {
+        totalTransaction
+    }
+}
+
+export const statService = {
+    getUserState,
+    getTransactionStat
+}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 
@@ -17,5 +18,19 @@ const getUserStat = catchAsync(async (req: Request, res: Response, next: NextFun
 
     })
 })
-export const statController = { getUserStat }
+const getTransactionStat = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const data = await statService.getTransactionStat()
+
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "Transaction stat get Success",
+        data: data
+
+    })
+})
+export const statController = {
+    getUserStat,
+    getTransactionStat
+}
 
