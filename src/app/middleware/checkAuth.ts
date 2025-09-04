@@ -11,8 +11,12 @@ import { IUserStatus } from "../modules/user/user.interface";
 export const checkAuth = (...authRole: string[]) => async (req: Request, res: Response, next: NextFunction) => {
 
     try {
+        console.log(req);
 
-        const accessToken = req.headers.authorization
+        console.log(await req.cookies.accessToken);
+
+        const accessToken = req.headers.authorization || req.cookies.accessToken;
+
         if (!accessToken) {
             throw new AppError(statusCode.UNAUTHORIZED, "No token Received")
         }

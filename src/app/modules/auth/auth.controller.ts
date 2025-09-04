@@ -10,11 +10,13 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
     const login = await authService.credentialLogin(req.body)
     res.cookie("accessToken", login.accessToken, {
         httpOnly: true,
-        secure: false
+        secure: true,
+        sameSite: "none"
     })
     res.cookie("refreshToken", login.refreshToken, {
         httpOnly: true,
-        secure: false
+        secure: true,
+        sameSite: "none"
     })
     sendResponse(res, {
         statusCode: statusCode.OK,
@@ -31,7 +33,7 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
 
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req?.cookies?.refreshToken
-   
+
     if (!refreshToken) {
         throw new AppError(statusCode.BAD_REQUEST, "No Refresh token received from cookies")
     }

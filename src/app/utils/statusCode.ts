@@ -1,3 +1,3 @@
 import statusCode from 'http-status-codes'
 
-export default statusCode
+export default statusCode   

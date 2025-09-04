@@ -9,6 +9,7 @@ interface IEnvConfig {
     JWT_EXPIRES_IN: string,
     JWT_REFRESH_EXPIRES_IN: string,
     JWT_REFRESH_SECRET: string,
+    FRONTEND_URL: string,
 }
 
 const loadVariable = (): IEnvConfig => {
@@ -21,6 +22,7 @@ const loadVariable = (): IEnvConfig => {
         "JWT_REFRESH_SECRET",
         "JWT_EXPIRES_IN",
         "JWT_REFRESH_EXPIRES_IN",
+        "FRONTEND_URL"
     ]
 
     requiredEnvVariable.forEach(key => {
@@ -38,6 +40,9 @@ const loadVariable = (): IEnvConfig => {
         JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
         JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN as string,
         JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as string,
+
+        FRONTEND_URL: process.env.FRONTEND_URL as string,
+
     }
 }
 
