@@ -213,6 +213,8 @@ const myTransactionHistory = async (decodedToken: JwtPayload) => {
 
 const getAllTransaction = async () => {
     const allTransaction = await Transaction.find({})
+        .populate("userId")
+        .populate("toUserId")
     return allTransaction
 }
 

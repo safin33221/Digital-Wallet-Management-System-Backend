@@ -38,7 +38,7 @@ const createUser = async (payload: Partial<IUser>) => {
 }
 
 const getUser = async (query: Record<string, string>) => {
-    console.log(query);
+
 
     const users = await User.find(query).populate("wallet").select("-password -__v")
 
@@ -59,6 +59,7 @@ const getMe = async (decodedToken: JwtPayload) => {
 }
 
 const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken: JwtPayload) => {
+
     const user = await User.findById(userId)
     if (!user) {
         throw new AppError(statusCode.NOT_FOUND, "user not found")
