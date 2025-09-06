@@ -9,6 +9,8 @@ import { ITransaction, ITransactionStatus, ITransactionTypes } from "./transacti
 import { IUserStatus, Role } from "../user/user.interface";
 import { getTransactionId } from "../../utils/transactionId";
 import bcryptjs from "bcryptjs";
+import { QueryBuilder } from "../../utils/QueryBuiler";
+import { transactionSearchableFields } from "./TransactonSearchableFileds";
 
 // ──────── Helpers ───────── //
 
@@ -211,11 +213,23 @@ const myTransactionHistory = async (decodedToken: JwtPayload) => {
     return await Transaction.find({ userPhone: user.phoneNumber }).sort({ createdAt: -1 });
 };
 
-const getAllTransaction = async () => {
-    const allTransaction = await Transaction.find({})
+const getAllTransaction = async (query: Record<string, string>) => {
+
+    const queryBuilder = new QueryBuilder(Transaction.find({})
         .populate("userId")
         .populate("toUserId")
-    return allTransaction
+        , query)
+
+    const allTransaction = await queryBuilder
+        .search(transactionSearchableFields)
+        .filter()
+        .sort()
+
+
+    const [data] = await Promise.all([
+        allTransaction.build()
+    ])
+    return data
 }
 
 

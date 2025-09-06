@@ -60,8 +60,8 @@ const myTransactionHistory = catchAsync(async (req: Request, res: Response, next
     })
 })
 const getAllTransaction = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
-    const transactions = await transactionService.getAllTransaction()
+    const query = req.query
+    const transactions = await transactionService.getAllTransaction(query as Record<string, string>)
     sendResponse(res, {
         statusCode: statusCode.OK,
         success: true,
