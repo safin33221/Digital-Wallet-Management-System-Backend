@@ -25,10 +25,12 @@ const getUsers = catchAsync(async (req: Request, res: Response, next: NextFuncti
         statusCode: statusCode.OK,
         success: true,
         message: "User Get successfully",
-        data: users.users,
-        meta: {
-            total: users.totalUser
+        data: {
+
+            meta: users.metaData,
+            data: users.data
         }
+
 
     })
 

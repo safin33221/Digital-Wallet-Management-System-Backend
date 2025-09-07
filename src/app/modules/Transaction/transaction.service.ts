@@ -224,12 +224,16 @@ const getAllTransaction = async (query: Record<string, string>) => {
         .search(transactionSearchableFields)
         .filter()
         .sort()
+        .pagination()
 
 
-    const [data] = await Promise.all([
-        allTransaction.build()
+    const [data, meta] = await Promise.all([
+        allTransaction.build(),
+        allTransaction.getMetadata()
     ])
-    return data
+    return {
+        data, meta
+    }
 }
 
 

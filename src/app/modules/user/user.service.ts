@@ -6,6 +6,8 @@ import { Wallet } from "../wallet/wallet.model";
 import { IUser, Role } from "./user.interface";
 import { User } from "./user.model";
 import bcryptjs from 'bcryptjs'
+import { QueryBuilder } from "../../utils/QueryBuiler";
+import { UserSearchableFields } from "./constants";
 
 const createUser = async (payload: Partial<IUser>) => {
 
@@ -39,8 +41,25 @@ const createUser = async (payload: Partial<IUser>) => {
 
 const getUser = async (query: Record<string, string>) => {
 
+    const queryBuilder = new QueryBuilder(User.find()
+        .populate("wallet").select("-password -__v")
+        , query)
 
-    const users = await User.find(query).populate("wallet").select("-password -__v")
+
+    const users = await queryBuilder
+        .search(UserSearchableFields)
+        .sort()
+        .filter()
+        .pagination()
+
+    const [data, metaData] = await Promise.all([
+        users.build(),
+        users.getMetadata()
+    ])
+    return { metaData, data }
+
+
+    // const users = await User.find(query).populate("wallet").select("-password -__v")
 
 
     const totalUser = await User.countDocuments()
@@ -71,6 +90,7 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
 
 
     }
+
     if (payload.phoneNumber) {
         throw new AppError(statusCode.BAD_REQUEST, "You can't change phone number")
     }

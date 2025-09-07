@@ -42,8 +42,31 @@ export class QueryBuilder<T> {
         return this
     }
 
+    fields(): this {
+        const fields = this.query.field.split(",").join(" ") || ""
+        this.modelQuery = this.modelQuery.select(fields)
+        return this
+    }
+
+    pagination(): this {
+        const page = Number(this.query.page) || 1
+        const limit = Number(this.query.limit) || 10
+        const skip = (page - 1) * limit
+
+        this.modelQuery = this.modelQuery.skip(skip).limit(limit)
+        return this
+    }
+
     build() {
         return this.modelQuery
+    }
+
+    async getMetadata() {
+        const totalDocument = await this.modelQuery.model.countDocuments()
+        const page = Number(this.query.page) || 1
+        const limit = Number(this.query.limit) || 10
+        const totalPage = Math.ceil(totalDocument / limit)
+        return { page, limit, total: totalDocument, totalPage }
     }
 
 
