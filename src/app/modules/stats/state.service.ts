@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken"
 import { Transaction } from "../Transaction/transaction.model"
 import { IUserStatus, Role } from "../user/user.interface"
 import { User } from "../user/user.model"
@@ -55,7 +56,35 @@ const getTransactionStat = async () => {
     }
 }
 
+
+const getSingleAgentTransactionStat = async (decodedToken: JwtPayload) => {
+    const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate("wallet")
+    if (!user) {
+        throw new Error("User not found");
+    }
+    const cashInStatPromise = Transaction.aggregate([
+        {
+            $match: { userId: user._id }
+        },
+        {
+            $group: {
+                _id: "$type",
+                totalAmount: { $sum: "$amount" },
+                count: { $sum: 1 }
+            }
+        }
+    ])
+
+    const [cashInStat] = await Promise.all([
+        cashInStatPromise
+    ])
+    return {
+        cashInStat
+    }
+}
+
 export const statService = {
     getUserState,
-    getTransactionStat
+    getTransactionStat,
+    getSingleAgentTransactionStat
 }
