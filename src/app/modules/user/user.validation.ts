@@ -79,4 +79,6 @@ export const updateUserZod = z.object({
     commissionRate: z.number().optional(),
 
     approvedBy: z.string().optional(),
+    password: z.string().optional(),
+    oldPassword: z.string().optional()
 });

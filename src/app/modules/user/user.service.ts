@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { JwtPayload } from "jsonwebtoken";
 import { envVar } from "../../config/env.config";
 import AppError from "../../errorHelpers/AppError";
@@ -62,11 +63,6 @@ const getUser = async (query: Record<string, string>) => {
     // const users = await User.find(query).populate("wallet").select("-password -__v")
 
 
-    const totalUser = await User.countDocuments()
-    return {
-        users,
-        totalUser
-    }
 }
 
 const getMe = async (decodedToken: JwtPayload) => {
@@ -95,8 +91,17 @@ const updateUser = async (userId: string, payload: Partial<IUser>, decodedToken:
         throw new AppError(statusCode.BAD_REQUEST, "You can't change phone number")
     }
     if (payload.password) {
-        payload.password = await bcryptjs.hash(payload.password as string, Number(envVar.BCRYPT_SLAT))
+        if (!payload.oldPassword) {
+            throw new AppError(statusCode.BAD_REQUEST, "Old password required")
+        }
+        const matchPassword = await bcryptjs.compare(payload.oldPassword, user.password)
+        if (!matchPassword) {
+            throw new AppError(statusCode.UNAUTHORIZED, "Password doesn't match")
+        }
+        payload.password = await bcryptjs.hash(payload.password, Number(envVar.BCRYPT_SLAT))
+        delete (payload as any).oldPassword
     }
+
     const updatedUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
     return updatedUser
 }

@@ -14,10 +14,11 @@ import { transactionSearchableFields } from "./TransactonSearchableFileds";
 
 // ──────── Helpers ───────── //
 
-const validateAmount = (amount?: number) => {
+const validateAmount = async (amount?: number) => {
     if (!amount || amount <= 0) {
         throw new AppError(statusCode.BAD_REQUEST, "Invalid amount");
     }
+
 };
 
 const findUserByPhone = async (phone: string, message = "User not found") => {
@@ -28,6 +29,7 @@ const findUserByPhone = async (phone: string, message = "User not found") => {
 };
 
 const updateWalletBalance = async (walletId: any, amount: number) => {
+
     await Wallet.findByIdAndUpdate(walletId, {
         $inc: { balance: amount },
         lastTransaction: new Date(),
@@ -142,6 +144,7 @@ const withdrawMoney = async (payload: Partial<ITransaction>, decodedToken: JwtPa
 };
 
 const cashIn = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) => {
+
     validateAmount(payload.amount);
 
     //Agent 
@@ -151,6 +154,15 @@ const cashIn = async (payload: Partial<ITransaction>, decodedToken: JwtPayload) 
         throw new AppError(statusCode.BAD_REQUEST, "your account is not approved as an agent yet")
 
     }
+
+    // const wallet = await Wallet.findOne(user.wallet)
+    // if (wallet?.balance < payload) {
+
+    // }
+
+
+
+
 
     //Customer
     const customer = await findUserByPhone(payload.toUserPhone as string, "User not found");

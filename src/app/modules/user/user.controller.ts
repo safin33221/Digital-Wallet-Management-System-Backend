@@ -51,6 +51,7 @@ const getMe = catchAsync(async (req: Request, res: Response, next: NextFunction)
 const updatedUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.params.userId
     const verifiedToken = req.user as JwtPayload
+
     const user = await userService.updateUser(userId, req.body, verifiedToken)
     sendResponse(res, {
         statusCode: statusCode.OK,

@@ -7,20 +7,39 @@ import { transactionZodSchema } from "./transaction.validation";
 
 const router = Router()
 
-router.post("/add-money", checkAuth(Role.USER), transactionController.addMoney)
-router.post("/send-money", validateRequest(transactionZodSchema), checkAuth(Role.USER), transactionController.sendMoney)
-router.post("/withdraw-money", validateRequest(transactionZodSchema), checkAuth(Role.USER), transactionController.withdrawMoney)
-router.get("/my-transaction", checkAuth(Role.USER), transactionController.myTransactionHistory)
+router.post("/add-money",
+    checkAuth(Role.USER),
+    transactionController.addMoney)
+
+router.post("/send-money",
+    validateRequest(transactionZodSchema),
+    checkAuth(Role.USER),
+    transactionController.sendMoney)
+
+router.post("/withdraw-money",
+    validateRequest(transactionZodSchema),
+    checkAuth(Role.USER),
+    transactionController.withdrawMoney)
+
+router.get("/my-transaction",
+    checkAuth(...Object.values(Role)),
+    transactionController.myTransactionHistory)
 
 
 
 //Agents transaction
-router.post("/cash-in", checkAuth(Role.AGENT), transactionController.cashIn)
-router.post("/cash-out", checkAuth(Role.USER), transactionController.cashOut)
+router.post("/cash-in",
+    checkAuth(Role.AGENT),
+    transactionController.cashIn)
+router.post("/cash-out",
+    checkAuth(Role.USER),
+    transactionController.cashOut)
 
 
 //admin 
-router.get("/all-transaction", checkAuth(Role.ADMIN), transactionController.getAllTransaction)
+router.get("/all-transaction",
+    checkAuth(Role.ADMIN),
+    transactionController.getAllTransaction)
 
 
 
