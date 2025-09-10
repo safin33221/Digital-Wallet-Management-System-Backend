@@ -8,7 +8,7 @@ import { transactionZodSchema } from "./transaction.validation";
 const router = Router()
 
 router.post("/add-money",
-    checkAuth(Role.USER),
+    checkAuth(...Object.values(Role)),
     transactionController.addMoney)
 
 router.post("/send-money",

@@ -11,7 +11,7 @@ router.post("/create",
     validateRequest(createUserZod),
     userController.createUser)
 router.get("/",
-    checkAuth(Role.ADMIN),
+    checkAuth(Role.ADMIN, Role.USER),
     userController.getUsers)
 
 router.patch("/:userId",

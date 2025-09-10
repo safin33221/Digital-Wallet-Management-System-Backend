@@ -2,6 +2,7 @@ import { JwtPayload } from "jsonwebtoken"
 import { Transaction } from "../Transaction/transaction.model"
 import { IUserStatus, Role } from "../user/user.interface"
 import { User } from "../user/user.model"
+import { Wallet } from "../wallet/wallet.model"
 
 const getUserState = async () => {
     const totalAllUserPromise = User.countDocuments()
@@ -58,33 +59,83 @@ const getTransactionStat = async () => {
 
 
 const getSingleAgentTransactionStat = async (decodedToken: JwtPayload) => {
+    const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate("wallet");
+    if (!user) throw new Error("User not found");
+
+    const result = await Transaction.aggregate([
+        { $match: { userId: user._id } },
+        {
+            $facet: {
+                // 1️⃣ Stats grouped by type
+                statsByType: [
+                    {
+                        $group: {
+                            _id: "$type",
+                            totalAmount: { $sum: "$amount" },
+                            count: { $sum: 1 },
+                        },
+                    },
+                ],
+
+                // 2️⃣ Recent 5 transactions (all types)
+                recentTransactions: [
+                    { $sort: { createdAt: -1 } },
+                    { $limit: 5 },
+                ],
+            },
+        },
+    ]);
+
+    const statsByType = result[0].statsByType || [];
+    const recentTransactions = result[0].recentTransactions || [];
+
+
+
+
+    return {
+        statsByType,
+        recentTransactions,
+    };
+};
+
+
+
+const getSingleUserStat = async (decodedToken: JwtPayload) => {
     const user = await User.findOne({ phoneNumber: decodedToken.phoneNumber }).populate("wallet")
     if (!user) {
         throw new Error("User not found");
     }
-    const cashInStatPromise = Transaction.aggregate([
+
+    const walletBalancePromise = Wallet.findById(user.wallet).select("balance")
+
+    const recentTransActionPromise = Transaction.aggregate([
         {
             $match: { userId: user._id }
         },
         {
-            $group: {
-                _id: "$type",
-                totalAmount: { $sum: "$amount" },
-                count: { $sum: 1 }
-            }
+            $sort: { createdAt: -1 }
+        },
+        {
+            $limit: 5
         }
     ])
 
-    const [cashInStat] = await Promise.all([
-        cashInStatPromise
+    const [walletBalance,
+        recentTransaction
+    ] = await Promise.all([
+        walletBalancePromise,
+        recentTransActionPromise
     ])
     return {
-        cashInStat
+        walletBalance,
+        recentTransaction
     }
 }
 
 export const statService = {
     getUserState,
     getTransactionStat,
-    getSingleAgentTransactionStat
+    getSingleAgentTransactionStat,
+    getSingleUserStat,
+
 }

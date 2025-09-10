@@ -42,11 +42,24 @@ const getSingleAgentTransactionStat = catchAsync(async (req: Request, res: Respo
 
     })
 })
+const getSingleUserStat = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const verifyToken = req.user as JwtPayload
+    const data = await statService.getSingleUserStat(verifyToken)
+
+    sendResponse(res, {
+        statusCode: statusCode.OK,
+        success: true,
+        message: "User stat get Success",
+        data: data
+
+    })
+})
 
 
 export const statController = {
     getUserStat,
     getTransactionStat,
-    getSingleAgentTransactionStat
+    getSingleAgentTransactionStat,
+    getSingleUserStat
 }
 
