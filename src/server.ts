@@ -1,10 +1,10 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 /* eslint-disable no-console */
 import { Server } from "http";
 import mongoose from "mongoose";
 import app from "./app";
 import { envVar } from "./app/config/env.config";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let server: Server;
 
 const startServer = async () => {

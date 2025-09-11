@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const app_1 = __importDefault(require("./app"));
 const env_config_1 = require("./app/config/env.config");
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let server;
 const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -30,3 +29,35 @@ const startServer = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 startServer();
+process.on("SIGTERM", () => {
+    console.log("Sigterm received ....sever shuting d");
+    if (server) {
+        server.close(() => {
+            process.exit(1);
+        });
+    }
+});
+process.on("SIGINT", () => {
+    console.log("SIGINT signal  received ....sever shuting down");
+    if (server) {
+        server.close(() => {
+            process.exit(1);
+        });
+    }
+});
+process.on("unHandleRejection", (err) => {
+    console.log("unHandle Rejection detected", err);
+    if (server) {
+        server.close(() => {
+            process.exit(1);
+        });
+    }
+});
+process.on("uncaughtException", (err) => {
+    console.log("Un caught exception detected", err);
+    if (server) {
+        server.close(() => {
+            process.exit(1);
+        });
+    }
+});
